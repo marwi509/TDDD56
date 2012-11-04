@@ -98,17 +98,19 @@ int
 stack_push_safe(stack_t *stack, void* buffer)
 {
 #if NON_BLOCKING == 0
-  // Lock-bases push
+  // Lock-based push
   pthread_mutex_lock(&stack -> theMutex);
 	if(stack -> head == NULL)
 	{
 		stack -> head = malloc(sizeof(struct element));
+		stack -> head -> theData = malloc(stack -> sizeOfElement);
 		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
 		stack -> head -> next = NULL;
 	}
 	else
 	{
 		struct element* theNewElement = malloc(sizeof(struct element));
+		theNewElement -> theData = malloc(stack -> sizeOfElement);
 		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
 		theNewElement -> next = stack -> head;
 		stack -> head = theNewElement;
