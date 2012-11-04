@@ -78,9 +78,7 @@ stack_init(stack_t *stack, size_t size)
   assert(size > 0);
 
 #if NON_BLOCKING == 0
-  pthread_mutex_lock(&stack -> theMutex);
   
-  pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
 #endif
@@ -99,8 +97,25 @@ stack_check(stack_t *stack)
 int
 stack_push_safe(stack_t *stack, void* buffer)
 {
+  int theData = *((int*)buffer);
 #if NON_BLOCKING == 0
-  // Implement a lock_based stack
+  // Lock-bases push
+  pthread_mutex_lock(&stack -> theMutex);
+	if(stack -> head == NULL)
+	{
+		stack -> head = malloc(sizeof(struct element));
+		stack -> head -> theElement = theData;
+		stack -> head -> next = NULL;
+	}
+	else
+	{
+		struct element* theNewElement = malloc(sizeof(struct element));
+		theNewElement -> theElement = theData;
+		theNewElement -> next = stack -> head;
+		stack -> head = theNewElement;
+	}
+	
+  pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
 #endif
