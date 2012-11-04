@@ -31,6 +31,7 @@ struct stack
 {
   // This is a fake structure; change it to your needs
   struct element* head;
+  size_t sizeOfElement;
 #if NON_BLOCKING == 0
   pthread_mutex_t theMutex;
 #endif
@@ -39,7 +40,7 @@ struct stack
 struct element
 {
 	struct element *next;
-	int theElement;
+	void * theData;
 };
 
 typedef struct stack stack_t;

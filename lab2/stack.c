@@ -76,7 +76,7 @@ stack_init(stack_t *stack, size_t size)
 {
   assert(stack != NULL);
   assert(size > 0);
-
+  stack -> sizeOfElement = size;
 #if NON_BLOCKING == 0
   
 #else
@@ -97,20 +97,19 @@ stack_check(stack_t *stack)
 int
 stack_push_safe(stack_t *stack, void* buffer)
 {
-  int theData = *((int*)buffer);
 #if NON_BLOCKING == 0
   // Lock-bases push
   pthread_mutex_lock(&stack -> theMutex);
 	if(stack -> head == NULL)
 	{
 		stack -> head = malloc(sizeof(struct element));
-		stack -> head -> theElement = theData;
+		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
 		stack -> head -> next = NULL;
 	}
 	else
 	{
 		struct element* theNewElement = malloc(sizeof(struct element));
-		theNewElement -> theElement = theData;
+		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
 		theNewElement -> next = stack -> head;
 		stack -> head = theNewElement;
 	}
@@ -133,7 +132,7 @@ stack_pop_safe(stack_t *stack, void* buffer)
 	{
 		struct element* theOldHead = stack -> head;
 		stack -> head = stack -> head -> next;
-		memcpy(buffer, &theOldHead -> theElement, sizeof(int));
+		memcpy(buffer, &theOldHead -> theData, stack -> sizeOfElement);
 		free(theOldHead);
 	}
   pthread_mutex_unlock(&stack -> theMutex);
