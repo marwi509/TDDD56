@@ -145,6 +145,15 @@ stack_pop_safe(stack_t *stack, void* buffer)
   pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
+  struct element* newHead;
+	do
+	{
+		struct element* theOldHead = stack -> head;
+		newHead = theOldHead;
+	}while(!cas(stack -> head,theOldHead,newHead);
+	memcpy(buffer, &newHead ->theData, stack ->sizeOfElement);
+	free(newHead);
+	
 	
 #endif
 
