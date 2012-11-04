@@ -116,7 +116,16 @@ stack_push_safe(stack_t *stack, void* buffer)
 	
   pthread_mutex_unlock(&stack -> theMutex);
 #else
-  // Implement a CAS-based stack
+	// Implement a CAS-based stack
+	
+	do
+	{
+		struct *element old = stack->head;
+		struct element* theNewElement = malloc(sizeof(struct element));
+		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
+		theNewElement -> next = stack -> head;
+		
+	}while(!cas(stack->head,old,theNewElement))
 #endif
 
   return 0;
