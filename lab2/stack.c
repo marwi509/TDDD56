@@ -125,7 +125,7 @@ stack_push_safe(stack_t *stack, void* buffer)
 		struct *element old = stack->head;
 		struct element* theNewElement = malloc(sizeof(struct element));
 		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
-		theNewElement -> next = stack -> head;
+		theNewElement -> next = old;
 		
 	}while(!cas(stack->head,old,theNewElement))
 #endif
