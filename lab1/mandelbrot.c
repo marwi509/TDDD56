@@ -145,7 +145,7 @@ init_round()
 void
 parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *parameters)
 {
-#if LOADBALANCE == 1
+#if LOADBALANCE == 1 // Use a stack
 	
 	if(args -> id == 0)
 	{
@@ -155,7 +155,7 @@ parallel_mandelbrot(struct mandelbrot_thread *args, struct mandelbrot_param *par
 	
 	int i;
 	int RowsPerThread = ROWS_PER_TASK;
-	float threadsInv = (float)ROWS_PER_TASK / (float)mandelbrot_param.height;;
+	float threadsInv = (float)ROWS_PER_TASK / (float)mandelbrot_param.height;
 	float irange = mandelbrot_param.upper_i - mandelbrot_param.lower_i;
 	int tasksPerThread = (mandelbrot_param.height / ROWS_PER_TASK) / NB_THREADS;
 	

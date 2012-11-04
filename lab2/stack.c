@@ -109,9 +109,12 @@ stack_push_safe(stack_t *stack, void* buffer)
 	}
 	else
 	{
+		
 		struct element* theNewElement = malloc(sizeof(struct element));
 		theNewElement -> theData = malloc(stack -> sizeOfElement);
-		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
+		//memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement); // Marcus version
+		memcpy(theNewElement -> theData, buffer, stack -> sizeOfElement); // Borde det inte vara såhär?
+		
 		theNewElement -> next = stack -> head;
 		stack -> head = theNewElement;
 	}
@@ -151,6 +154,10 @@ stack_pop_safe(stack_t *stack, void* buffer)
   pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
+	do
+	{
+	  
+	}while(!cas(stack->head,old))
 #endif
 
   return 0;
