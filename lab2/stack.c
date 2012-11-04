@@ -100,21 +100,13 @@ stack_push_safe(stack_t *stack, void* buffer)
 #if NON_BLOCKING == 0
   // Lock-based push
   pthread_mutex_lock(&stack -> theMutex);
-	if(stack -> head == NULL)
-	{
-		stack -> head = malloc(sizeof(struct element));
-		stack -> head -> theData = malloc(stack -> sizeOfElement);
-		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
-		stack -> head -> next = NULL;
-	}
-	else
-	{
-		struct element* theNewElement = malloc(sizeof(struct element));
-		theNewElement -> theData = malloc(stack -> sizeOfElement);
-		memcpy(stack -> head -> theData, buffer, stack -> sizeOfElement);
-		theNewElement -> next = stack -> head;
-		stack -> head = theNewElement;
-	}
+
+	struct element* theNewElement = malloc(sizeof(struct element));
+	theNewElement -> theData = malloc(stack -> sizeOfElement);
+	memcpy(theNewElement -> theData, buffer, stack -> sizeOfElement);
+	theNewElement -> next = stack -> head;
+	stack -> head = theNewElement;
+	
 	
   pthread_mutex_unlock(&stack -> theMutex);
 #else
@@ -148,6 +140,8 @@ stack_pop_safe(stack_t *stack, void* buffer)
 		memcpy(buffer, &theOldHead -> theData, stack -> sizeOfElement);
 		free(theOldHead);
 	}
+	else
+		return -1;
   pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
