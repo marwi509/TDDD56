@@ -128,6 +128,15 @@ stack_pop_safe(stack_t *stack, void* buffer)
 {
 #if NON_BLOCKING == 0
   // Implement a lock_based stack
+  pthread_mutex_lock(&stack -> theMutex);
+	if(stack -> head != NULL)
+	{
+		struct element* theOldHead = stack -> head;
+		stack -> head = stack -> head -> next;
+		memcpy(buffer, &theOldHead -> theElement, sizeof(int));
+		free(theOldHead);
+	}
+  pthread_mutex_unlock(&stack -> theMutex);
 #else
   // Implement a CAS-based stack
 #endif
