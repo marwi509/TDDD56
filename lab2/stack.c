@@ -112,16 +112,16 @@ stack_push_safe(stack_t *stack, void* buffer)
 #else
 	// Implement a CAS-based stack
 	struct element* theNewElement;
+	theNewElement = malloc(sizeof(struct element));
+	theNewElement -> theData = malloc(stack ->sizeOfElement);
+	memcpy(theNewElement -> theData,buffer,stack -> sizeOfElement);
 	do
 	{
 		struct *element old = stack->head;
-		theNewElement = malloc(sizeof(struct element));
-		theNewElement -> theData = malloc(stack ->sizeOfElement);
-		memcpy(theNewElement -> theData,buffer,stack -> sizeOfElement);
 		theNewElement -> next = old;
 		
 	}while(!cas(stack->head,old,theNewElement))
-	stack -> head = theNewElement;
+	//stack -> head = theNewElement;
 #endif
 
   return 0;
@@ -138,6 +138,7 @@ stack_pop_safe(stack_t *stack, void* buffer)
 		struct element* theOldHead = stack -> head;
 		stack -> head = stack -> head -> next;
 		memcpy(buffer, &theOldHead -> theData, stack -> sizeOfElement);
+		free(theOldHead -> theData);
 		free(theOldHead);
 	}
 	else
@@ -146,13 +147,15 @@ stack_pop_safe(stack_t *stack, void* buffer)
 #else
   // Implement a CAS-based stack
   struct element* newHead;
+  struct element* theOldHead;
 	do
 	{
-		struct element* theOldHead = stack -> head;
-		newHead = theOldHead;
+		theOldHead = stack -> head;
+		memcpy(buffer, &stack -> head -> theData, stack -> sizeOfElement);
+		newHead = theOldHead -> next;
 	}while(!cas(stack -> head,theOldHead,newHead);
-	memcpy(buffer, &newHead ->theData, stack ->sizeOfElement);
-	free(newHead);
+	free(theOldHead -> theData);
+	free(theOldHead);
 	
 	
 #endif
