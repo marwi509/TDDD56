@@ -24,11 +24,7 @@ log()
 
 run()
 {
-<<<<<<< HEAD
-=======
-#	log "[CMD] " "$@"
->>>>>>> c0bef48c3a77c329f9c95af7205b801b9f61ba17
-	$@
+#	log "[CMD] " $@
 }
 
 info_start()
