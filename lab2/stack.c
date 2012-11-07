@@ -117,10 +117,10 @@ stack_push_safe(stack_t *stack, void* buffer)
 	memcpy(theNewElement -> theData,buffer,stack -> sizeOfElement);
 	do
 	{
-		struct *element old = stack->head;
+		struct element* old = stack->head;
 		theNewElement -> next = old;
 		
-	}while(!cas(stack->head,old,theNewElement))
+	}while(!cas(stack->head,old,theNewElement));
 	//stack -> head = theNewElement;
 #endif
 
@@ -153,7 +153,7 @@ stack_pop_safe(stack_t *stack, void* buffer)
 		theOldHead = stack -> head;
 		memcpy(buffer, &stack -> head -> theData, stack -> sizeOfElement);
 		newHead = theOldHead -> next;
-	}while(!cas(stack -> head,theOldHead,newHead);
+	}while(!cas(stack -> head,theOldHead,newHead));
 	free(theOldHead -> theData);
 	free(theOldHead);
 	
