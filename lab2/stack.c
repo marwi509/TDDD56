@@ -121,7 +121,8 @@ stack_push_safe(stack_t *stack, void* buffer)
 		old = stack->head;
 		theNewElement -> next = old;
 		
-	}while(!cas((size_t)&stack->head,(size_t)old,(size_t)theNewElement));//while(!cas((void**)&stack->head,old,theNewElement)); // 
+	}while(!cas((void**)&stack->head,old,theNewElement)); // while(!cas((size_t)&stack->head,(size_t)old,(size_t)theNewElement));//
+
 	//stack -> head = theNewElement;
 #endif
 
@@ -160,7 +161,9 @@ stack_pop_safe(stack_t *stack, void* buffer)
 		theOldHead = stack -> head;
 		memcpy(buffer, stack -> head -> theData, stack -> sizeOfElement);
 		newHead = theOldHead -> next;
-	}while(!cas((size_t)&stack -> head,(size_t)theOldHead,(size_t)newHead));//while(!cas((void**)&stack -> head,theOldHead,newHead));//
+
+	}while(!cas((void**)&stack -> head,theOldHead,newHead));//while(!cas((size_t)&stack -> head,(size_t)theOldHead,(size_t)newHead));//
+
 	free(theOldHead -> theData);
 	free(theOldHead);
 	
