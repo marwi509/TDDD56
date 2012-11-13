@@ -23,5 +23,5 @@ logfile=log
 data=data
 ext=.m
 
-HEADER="function x = data() x = ["
-FOOTNOTE="]; endfunction"
+HEADER="function x = data()\\nx = ["
+FOOTNOTE="];\\nend"

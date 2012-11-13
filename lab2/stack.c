@@ -111,16 +111,17 @@ stack_push_safe(stack_t *stack, void* buffer)
   pthread_mutex_unlock(&stack -> theMutex);
 #else
 	// Implement a CAS-based stack
-	struct element* theNewElement;
+  struct element* theNewElement, *old;
 	theNewElement = malloc(sizeof(struct element));
 	theNewElement -> theData = malloc(stack ->sizeOfElement);
 	memcpy(theNewElement -> theData,buffer,stack -> sizeOfElement);
+	
 	do
 	{
-		struct *element old = stack->head;
+		old = stack->head;
 		theNewElement -> next = old;
 		
-	}while(!cas(stack->head,old,theNewElement))
+	}while(!cas((size_t)&stack->head,(size_t)old,(size_t)theNewElement));//while(!cas((void**)&stack->head,old,theNewElement)); // 
 	//stack -> head = theNewElement;
 #endif
 
@@ -136,24 +137,30 @@ stack_pop_safe(stack_t *stack, void* buffer)
 	if(stack -> head != NULL)
 	{
 		struct element* theOldHead = stack -> head;
-		stack -> head = stack -> head -> next;
-		memcpy(buffer, &theOldHead -> theData, stack -> sizeOfElement);
+		stack -> head = stack -> head -> next;       
+		memcpy(buffer, (theOldHead -> theData), stack -> sizeOfElement);
 		free(theOldHead -> theData);
 		free(theOldHead);
 	}
 	else
-		return -1;
+	  {
+	    pthread_mutex_unlock(&stack -> theMutex);
+	    return -1;
+	  }
   pthread_mutex_unlock(&stack -> theMutex);
+  
 #else
+  if(stack -> head == NULL)
+    return -1;
   // Implement a CAS-based stack
   struct element* newHead;
   struct element* theOldHead;
 	do
 	{
 		theOldHead = stack -> head;
-		memcpy(buffer, &stack -> head -> theData, stack -> sizeOfElement);
+		memcpy(buffer, stack -> head -> theData, stack -> sizeOfElement);
 		newHead = theOldHead -> next;
-	}while(!cas(stack -> head,theOldHead,newHead);
+	}while(!cas((size_t)&stack -> head,(size_t)theOldHead,(size_t)newHead));//while(!cas((void**)&stack -> head,theOldHead,newHead));//
 	free(theOldHead -> theData);
 	free(theOldHead);
 	
