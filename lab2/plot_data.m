@@ -21,7 +21,7 @@ thread_timing_pop_hard = where(thread_timing_pop, [4], {[2]});
 
 global_timing = groupby(globaltiming, [1 2 3 4]);
 global_timing = reduce(global_timing, {@none, @none, @none, @none, @none, @mean, @std, @mean, @std});
-global_timing = where(global_timing, [2], {[5000000]});
+global_timing = where(global_timing, [2], {[500000]});
 global_timing_push = where(global_timing, [1], {[1]});
 global_timing_push_standard = where(global_timing_push, [4], {[0]});
 global_timing_push_soft = where(global_timing_push, [4], {[1]}); 
