@@ -81,7 +81,7 @@ main(int argc, char** argv)
 #endif
 
 	qsort(check->data, check->length, sizeof(value), ascending);
-
+	
 	for (i = 0; i < array->length; i++)
 	{
 		if (array_get(array, i) != array_get(check, i))
@@ -92,13 +92,16 @@ main(int argc, char** argv)
 			return EXIT_FAILURE;
 		}
 	}
-
+	
 	array_free(array);
 	free(output);
 
 #if MEASURE == 2
 #undef printf
 	printf("%li %li %li %li\n", start.tv_sec, start.tv_nsec, stop.tv_sec, stop.tv_nsec);
+	float start_time_ns = start.tv_nsec, stop_time_ns = stop.tv_nsec;
+	float start_time = start.tv_sec, stop_time = stop.tv_sec;
+	printf("Total time for sorting: %f\n", (stop_time + stop_time_ns / (1000000000.0f)) - (start_time + start_time_ns / (1000000000.0f)));
 #endif
 
 	return EXIT_SUCCESS;

@@ -32,15 +32,55 @@
 #include "array.h"
 #include "sort.h"
 #include "simple_quicksort.h"
+#include <string.h>
+#include <limits.h>
+#include "thread_args.h"
+#include "thread_handler.h"
+#include "insertion_sort.h"
+#include "merge_sort.h"
+
 //#include "custom_sort.h"
 
-void quick_sort(struct array* theArray, int start, int end);
+
+
+void quick_sort(void* args);
+void quick_sort_impl(struct array* theArray, int start, int end);
+void merge_sort(struct array* theArray, int start, int end);
+void stupid_sort(struct array* theArray, int nrOfThreads);
+void sample_sort(struct array* theArray, int start, int end, int nrOfThreads);
+
 int
 sort(struct array * array)
 {
 	
-	quick_sort(array, 0, array -> length - 1);
+	//quick_sort(array, 0, array -> length - 1);
+	/*
+	struct array* newArray = array_alloc(array -> length);
+	newArray -> length = array -> length;
+	int i;
+	for(i = 0; i < array -> length; i ++)
+	{
+		newArray -> data[i] = array -> data[i];
+	}
+	*/
+	//merge_sort(array, 0, array -> length - 1, 0);
+	//stupid_sort(array, 2);
+	//memcpy(array -> data, newArray -> data, sizeof(value) * array -> length);
+	struct thread_args* theStartingArguments = malloc(sizeof(struct thread_args));
+	theStartingArguments -> theArray = array;
+	theStartingArguments -> start = 0;
+	theStartingArguments -> end = array -> length - 1;
 	
+	thread_handler_init();
+	int threadCreated = get_available_thread();
+	
+	if(threadCreated == -1)
+		quick_sort_impl(array, 0, array -> length - 1);
+	else
+		pthread_create(&threads[threadCreated], NULL, (void*)quick_sort, (void*) theStartingArguments);
+	wait_for_thread(threadCreated);
+	//merge_sort_void(theStartingArguments);
+	//simple_quicksort_ascending(array);
 	return 0;
 }
 
@@ -49,6 +89,13 @@ sort(struct array * array)
 #include <stdlib.h>
 #include <string.h>
 #include <pthread.h>
+
+#ifndef NB_THREADS
+	#define NB_THREADS 6
+#endif
+//pthread_t threads[6];
+//int busy_threads[NB_THREADS];
+pthread_mutex_t theThreadMutex;
 
 
 int check_sorted(struct array* theArray, int start, int end)
@@ -82,69 +129,9 @@ void reverse_array(struct array* theArray, int start, int end)
 	}
 }
 
-void insertion_sort(struct array* theArray, int start, int end)
-{
-	int i;
-	for(i = start + 1; i <= end; i ++)
-	{
-		value item = theArray -> data[i];
-		int iHole = i;
-		while(iHole > start && theArray -> data[iHole - 1] > item)
-		{
-			theArray -> data[iHole] = theArray -> data[iHole - 1];
-			iHole = iHole - 1;
-		}
-		theArray -> data[iHole] = item;
-	}
-}
 
-void merge_lists(struct array* theArray, int start_left, int end_left, int start_right, int end_right)
-{
-	int current_left = start_left;
-	int current_right = start_right;
-	int current_index = 0;
-	int total_size = (end_right - start_left + 1);
-	value* tempArray = malloc(sizeof(value) * total_size);
-	
-	// Loop until both lists are done
-	while(1)
-	{
-		if(	(current_left != start_right &&
-			theArray -> data[current_left] <= theArray -> data[current_right]) ||
-			current_right == end_right + 1
-			)
-		{
-			tempArray[current_index] = theArray -> data[current_left];
-			current_index++;
-			current_left++;
-		}
-		else
-		{
-			tempArray[current_index] = theArray -> data[current_right];
-			current_index++;
-			current_right++;
-		}
-		if((current_left == start_right && current_right == end_right + 1) || current_index == total_size)
-			break;
-	}
-	memcpy(theArray -> data + start_left, tempArray, sizeof(value) * total_size);
-	free(tempArray);
-}
 
-void merge_sort(struct array* theArray, int start, int end, int rec)
-{
-	if(end <= start)
-		return;
-	int length = end - start;
-	if(rec > 4)
-	{
-		quick_sort(theArray, start, end);
-		return;
-	}
-	merge_sort(theArray, start, start + length / 2, rec + 1);
-	merge_sort(theArray, start + length / 2 + 1, end, rec + 1);
-	merge_lists(theArray, start, start + length / 2 ,start + length / 2 + 1,  end);
-}
+
 
 void swap(value* a, value* b)
 {
@@ -258,6 +245,23 @@ int partition(struct array* theArray, int start, int end, int pivot_index)
 */
 
 
+void quick_sort(void* args)
+{
+	/*
+	if(check_sorted(theArray, start, end))
+	{
+		return;
+	}
+	if(check_desc_sorted(theArray, start, end))
+	{
+		reverse_array(theArray, start, end);
+		return;
+	}
+	*/
+	struct thread_args * theArray = args;
+	quick_sort_impl(theArray -> theArray, theArray -> start, theArray -> end);
+}
+
 void quick_sort_impl(struct array* theArray, int start, int end)
 {
 	if(end - start < 20)
@@ -270,24 +274,210 @@ void quick_sort_impl(struct array* theArray, int start, int end)
 		value* left_val = &theArray -> data[start], *right_val = &theArray -> data[end], *middle_val = &theArray -> data[start + length/2];
 		median_of_three(left_val, middle_val, right_val);
 		int pivot_final = partition(theArray, start + 1 , end - 1, start + length / 2);
+		
+		if(1 || (end == theArray -> length - 1 && start == 0))
+		{
+			struct thread_args* theArguments = malloc(sizeof(struct thread_args));
+			theArguments -> theArray = theArray;
+			theArguments -> start = start;
+			theArguments -> end = pivot_final - 1;
+			int threadCreated = get_available_thread();
+			if(threadCreated == -1)
+				quick_sort_impl(theArray, start, pivot_final - 1);
+			else
+				pthread_create(&threads[threadCreated], NULL, (void*) (quick_sort), (void*)theArguments);
+			//quick_sort_impl(theArray, start, pivot_final - 1);
+			
+			struct thread_args* theArguments2 = malloc(sizeof(struct thread_args));
+			theArguments2 -> theArray = theArray;
+			theArguments2 -> start = pivot_final + 1;
+			theArguments2 -> end = end;
+			
+			//pthread_create(&threads[1], NULL, (void*) (quick_sort), (void*)theArguments2);
+			//quick_sort_impl(theArray, theArguments2 -> start, theArguments2 -> end );
+			quick_sort(theArguments2);
+			//pthread_join(threads[1], NULL);
+			//pthread_join(threads[0], NULL);
+			if(end == theArray -> length - 1 && start == 0)
+			{
+				printf("The length of the first half: %d\n", theArguments -> end - theArguments -> start);
+			}
+			wait_for_thread(threadCreated);
+			free(theArguments);
+			free(theArguments2);
+			return;
+		}
 		quick_sort_impl(theArray, start, pivot_final - 1);
 		quick_sort_impl(theArray, pivot_final + 1, end );
 	}
 }
 
-void quick_sort(struct array* theArray, int start, int end)
+
+
+
+
+
+void stupid_sort(struct array* theArray, int nrOfThreads)
 {
-	if(check_sorted(theArray, start, end))
+	/*
+	if(nrOfThreads < 2)
 	{
+		struct thread_args* theArgs = malloc(sizeof(struct thread_args));
+		theArgs -> theArray = theArray;
+		theArgs -> start = 0;
+		theArgs -> end = theArray -> length - 1;
+		quick_sort(theArgs);
 		return;
 	}
-	if(check_desc_sorted(theArray, start, end))
+	*/
+	int i;
+	int elementsPerThread = theArray -> length / nrOfThreads;
+	int totalElements = 0;
+	for(i = 0; i < nrOfThreads; i ++)
 	{
-		reverse_array(theArray, start, end);
-		return;
+		struct thread_args* theArgs = malloc(sizeof(struct thread_args));
+		theArgs -> theArray = theArray;
+		theArgs -> start = i * elementsPerThread;
+		if(i != nrOfThreads - 1)
+		{
+			theArgs -> end = (i + 1) * elementsPerThread - 1;
+		}
+		else
+		{
+			theArgs -> end = theArray -> length - 1;
+		}
+		pthread_create(&threads[i], NULL, (void*)(quick_sort), (void*)theArgs);
+		//printf("Total number of elements for stupid_sort(): %d\n", theArgs -> end - theArgs -> start + 1);
 	}
-	quick_sort_impl(theArray, start, end);
+	for(i = 0; i < nrOfThreads; i ++)
+	{
+		pthread_join(threads[i], NULL);
+	}
+	//quick_sort_impl(theArray, 0, theArray -> length - 1);
+	
+	for(i = 1; i < nrOfThreads; i ++)
+	{
+		if(i != nrOfThreads - 1)
+			merge_lists(theArray, 0, i * elementsPerThread - 1, i * elementsPerThread, (i + 1) * elementsPerThread - 1);
+		else
+			merge_lists(theArray, 0, i * elementsPerThread - 1, i * elementsPerThread, theArray -> length - 1);
+	}
+	
+	//merge_lists(theArray, 0, theArray -> length / 2, theArray -> length / 2 + 1, theArray -> length - 1);
+	
 }
+
+
+void sample_sort(struct array* theArray, int start, int end, int nrOfThreads)
+{
+	if(nrOfThreads < 2)
+	{
+		quick_sort_impl(theArray, start, end);
+		return;
+	}
+	int elementsPerThread = (end - start + 1) / theArray -> length;
+	int *thePivots = malloc(sizeof(int) * nrOfThreads);
+	int *thePivotIndices = malloc(sizeof(int) * nrOfThreads - 1);
+	int *tempList = malloc(sizeof(int) * theArray -> length);
+	printf("Innan pivot choice\n");
+	int i;
+	for(i = 0; i < nrOfThreads; i ++)
+	{
+		int currentStart = elementsPerThread * i;
+		int currentStop = elementsPerThread * (i + 1);
+		thePivots[i] = theArray -> data[start + (currentStop - currentStart) / 2];
+	}
+	
+	printf("Innan partition\n");
+	int p;
+	int current_index = start;
+	struct array *thePivotArray = malloc(sizeof(struct array));
+	thePivotArray -> data = thePivots;
+	thePivotArray -> length = nrOfThreads - 1;
+	insertion_sort(thePivotArray, 0, nrOfThreads - 1);
+	int nrOfPivots = nrOfThreads - 1;
+	for(p = -1; p < nrOfPivots; p ++)
+	{
+		for(i = 0; i < theArray -> length; i ++)
+		{
+			if(p == -1)
+			{
+				if(theArray -> data[i] < thePivots[0])
+				{
+					if(theArray -> data[i] != INT_MIN)
+					{
+						tempList[current_index++] = theArray -> data[i];
+						theArray -> data[i] = INT_MIN;
+					}
+				}
+				if(i == theArray -> length - 1)
+				{
+					tempList[current_index] = thePivots[p + 1];
+					thePivotIndices[p + 1] = current_index++;
+				}
+			}
+			else if(p == nrOfPivots - 1)
+			{
+				if(theArray -> data[i] > thePivots[p])
+				{
+					if(theArray -> data[i] != INT_MIN)
+					{
+						tempList[current_index++] = theArray -> data[i];
+						theArray -> data[i] = INT_MIN;
+					}
+				}
+				if(i == theArray -> length - 1)
+				{
+					tempList[current_index] = thePivots[p + 1];
+					thePivotIndices[p + 1] = current_index++;
+				}
+			}
+			else
+			{
+				if(theArray -> data[i] >= thePivots[p] && theArray -> data[i] <= thePivots[p + 1])
+				{
+					if(theArray -> data[i] != INT_MIN)
+					{
+						tempList[current_index++] = theArray -> data[i];
+						theArray -> data[i] = INT_MIN;
+					}
+				}
+			}
+		}
+	}
+	memcpy(theArray -> data, tempList, sizeof(int) * theArray -> length);
+	printf("Innan sort, currentindex: %d\n", current_index);
+	for(p = 0; p < nrOfThreads; p ++)
+	{
+		struct thread_args *theArguments = malloc(sizeof(struct thread_args));
+		theArguments -> theArray = theArray;
+		theArguments -> start = p > 0 ? thePivotIndices[p - 1] : 0;
+		theArguments -> end = p < nrOfThreads - 1 ? thePivotIndices[p] - 1 : theArray -> length - 1;
+		printf("Start: %d, Stop: %d\n", theArguments -> start, theArguments -> end);
+		pthread_create(&threads[p], NULL, (void*)(quick_sort), (void*)(theArguments));
+	}
+	
+	printf("Innan join\n");
+	for(p = 0; p < nrOfThreads; p ++)
+		pthread_join(threads[p], NULL);
+	printf("Efter join\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

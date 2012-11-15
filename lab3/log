@@ -19,25 +19,25 @@
 [INFO] Instance 18/40: input_size=100000 input_set=3 variants=1 nb_threads=6 try=3... OK. 0 seconds (0 minutes or 0 hours).
 [INFO] Instance 19/40: input_size=100000 input_set=3 variants=1 nb_threads=6 try=4... OK. 0 seconds (0 minutes or 0 hours).
 [INFO] Instance 20/40: input_size=100000 input_set=3 variants=1 nb_threads=6 try=5... OK. 0 seconds (0 minutes or 0 hours).
-[INFO] Instance 21/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=1... OK. 5 seconds (0 minutes or 0 hours).
-[INFO] Instance 22/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=2... OK. 5 seconds (0 minutes or 0 hours).
+[INFO] Instance 21/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=1... OK. 4 seconds (0 minutes or 0 hours).
+[INFO] Instance 22/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=2... OK. 4 seconds (0 minutes or 0 hours).
 [INFO] Instance 23/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=3... OK. 4 seconds (0 minutes or 0 hours).
-[INFO] Instance 24/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=4... OK. 5 seconds (0 minutes or 0 hours).
-[INFO] Instance 25/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=5... OK. 5 seconds (0 minutes or 0 hours).
+[INFO] Instance 24/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=4... OK. 4 seconds (0 minutes or 0 hours).
+[INFO] Instance 25/40: input_size=10000000 input_set=0 variants=1 nb_threads=6 try=5... OK. 4 seconds (0 minutes or 0 hours).
 [INFO] Instance 26/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=1... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 27/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=2... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 28/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=3... OK. 3 seconds (0 minutes or 0 hours).
+[INFO] Instance 28/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=3... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 29/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=4... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 30/40: input_size=10000000 input_set=1 variants=1 nb_threads=6 try=5... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 31/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=1... OK. 3 seconds (0 minutes or 0 hours).
+[INFO] Instance 31/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=1... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 32/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=2... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 33/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=3... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 34/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=4... OK. 3 seconds (0 minutes or 0 hours).
-[INFO] Instance 35/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=5... OK. 3 seconds (0 minutes or 0 hours).
+[INFO] Instance 33/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=3... OK. 3 seconds (0 minutes or 0 hours).
+[INFO] Instance 34/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=4... OK. 2 seconds (0 minutes or 0 hours).
+[INFO] Instance 35/40: input_size=10000000 input_set=2 variants=1 nb_threads=6 try=5... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 36/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=1... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 37/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=2... OK. 2 seconds (0 minutes or 0 hours).
+[INFO] Instance 37/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=2... OK. 3 seconds (0 minutes or 0 hours).
 [INFO] Instance 38/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=3... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Instance 39/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=4... OK. 3 seconds (0 minutes or 0 hours).
+[INFO] Instance 39/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=4... OK. 2 seconds (0 minutes or 0 hours).
 [INFO] Instance 40/40: input_size=10000000 input_set=3 variants=1 nb_threads=6 try=5... OK. 2 seconds (0 minutes or 0 hours).
-[INFO] Success. Instances took 62 seconds (1 minutes or 0 hours) to run, or 1 seconds per instance run (0 minutes or 0 hours).
+[INFO] Success. Instances took 53 seconds (0 minutes or 0 hours) to run, or 1 seconds per instance run (0 minutes or 0 hours).
 [INFO] Merging all results of the same experiment together
